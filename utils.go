@@ -43,3 +43,7 @@ func registerCommand(cmdReg cliCmdRegister, cmdName string, cmd cliCommand) erro
 	cmdReg[cmdName] = cmd
 	return nil
 }
+
+func makeQuery(key, value string) string {
+	return fmt.Sprintf("%s=%s", key, value)
+}

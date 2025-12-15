@@ -1,5 +1,7 @@
 package main
 
+const pokeDexLimitOffset = 20
+
 type (
 	cliCommand struct {
 		name        string
@@ -11,12 +13,20 @@ type (
 
 	ANSIColor string
 
-	pokeDexLocation struct {
-		name string
-		url  string
+	PokeDexLocation struct {
+		Name string `json:"name"`
+		Url  string `json:"url"`
 	}
 
-	pokeDexClient struct {
-		locations []pokeDexLocation
+	PokeDexLocationsData struct {
+		LocationsCount int               `json:"count"`
+		Next           string            `json:"next"`
+		Previous       any               `json:"previous"`
+		Locations      []PokeDexLocation `json:"results"`
+	}
+
+	PokeDexClient struct {
+		currentOffset int
+		nextOffset    int
 	}
 )

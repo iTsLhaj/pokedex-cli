@@ -7,27 +7,56 @@ import (
 	"os"
 )
 
+var commandsList []struct {
+	cmdName string
+	cmd     cliCommand
+} = []struct {
+	cmdName string
+	cmd     cliCommand
+}{
+	{
+		cmdName: "exit",
+		cmd: cliCommand{
+			name:        "exit",
+			description: "Exit the Pokedex",
+			callback:    commandExit,
+		},
+	},
+	{
+		cmdName: "help",
+		cmd: cliCommand{
+			name:        "help",
+			description: "Display a Help message",
+			callback:    commandHelp,
+		},
+	},
+	{
+		cmdName: "map",
+		cmd: cliCommand{
+			name:        "map",
+			description: "Display World Map",
+			callback:    commandMap,
+		},
+	},
+	{
+		cmdName: "mapb",
+		cmd: cliCommand{
+			name:        "mapb",
+			description: "Display Previous World Map",
+			callback:    commandMapBack,
+		},
+	},
+}
+
 func initCommands(commands cliCmdRegister) {
 	var err error
 
-	err = registerCommand(commands, "exit", cliCommand{
-		name:        "exit",
-		description: "Exit the Pokedex",
-		callback:    commandExit,
-	})
-	if err != nil {
-		log.Fatal(err)
+	for _, cmd := range commandsList {
+		err = registerCommand(commands, cmd.cmdName, cmd.cmd)
+		if err != nil {
+			log.Fatal(err)
+		}
 	}
-
-	err = registerCommand(commands, "help", cliCommand{
-		name:        "help",
-		description: "Display a Help message",
-		callback:    commandHelp,
-	})
-	if err != nil {
-		log.Fatal(err)
-	}
-
 }
 
 func PokedexLoop() {
@@ -47,9 +76,7 @@ func PokedexLoop() {
 			continue
 		}
 		for cmdName, cmdHandle := range commands {
-			fmt.Println(cmdName)
 			if cmd[0] == cmdName {
-				fmt.Println("...")
 				err := cmdHandle.callback()
 				if err != nil {
 					fmt.Printf(" <%s> Failed: %s\n", cmdName, err)
