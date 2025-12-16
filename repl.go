@@ -46,6 +46,14 @@ var commandsList []struct {
 			callback:    commandMapBack,
 		},
 	},
+	{
+		cmdName: "explore",
+		cmd: cliCommand{
+			name:        "explore",
+			description: "Display List of Pokemons in Area",
+			callback:    commandExplore,
+		},
+	},
 }
 
 func initCommands(commands cliCmdRegister) {
@@ -65,6 +73,8 @@ func PokedexLoop() {
 
 	initCommands(commands)
 	for {
+		commandFound := false
+
 		putPrompt("Pokedex")
 		eof := scanner.Scan()
 		if !eof {
@@ -77,11 +87,16 @@ func PokedexLoop() {
 		}
 		for cmdName, cmdHandle := range commands {
 			if cmd[0] == cmdName {
-				err := cmdHandle.callback()
+				commandFound = true
+				err := cmdHandle.callback(cmd[1:])
 				if err != nil {
 					fmt.Printf(" <%s> Failed: %s\n", cmdName, err)
 				}
 			}
+		}
+
+		if !commandFound {
+			fmt.Printf("command `%s` not found\n", cmd[0])
 		}
 	}
 }

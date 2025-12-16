@@ -8,23 +8,59 @@ type (
 	cliCommand struct {
 		name        string
 		description string
-		callback    func() error
+		callback    func([]string) error
 	}
 
 	cliCmdRegister map[string]cliCommand
 
 	ANSIColor string
 
-	PokeDexLocation struct {
+	PokeDexEntity struct {
 		Name string `json:"name"`
 		Url  string `json:"url"`
 	}
+
+	PokeDexLocation PokeDexEntity
 
 	PokeDexLocationsData struct {
 		LocationsCount int               `json:"count"`
 		Next           string            `json:"next"`
 		Previous       any               `json:"previous"`
 		Locations      []PokeDexLocation `json:"results"`
+	}
+
+	PokeDexPokemon PokeDexEntity
+
+	PokeDexPokemonEncounters struct {
+		EncounterMethodRates []struct {
+			EncounterMethod PokeDexEntity `json:"encounter_method"`
+			VersionDetails  []struct {
+				Rate    int           `json:"rate"`
+				Version PokeDexEntity `json:"version"`
+			} `json:"version_details"`
+		} `json:"encounter_method_rates"`
+		GameIndex int           `json:"game_index"`
+		ID        int           `json:"id"`
+		Location  PokeDexEntity `json:"location"`
+		Name      string        `json:"name"`
+		Names     []struct {
+			Language PokeDexEntity `json:"language"`
+			Name     string        `json:"name"`
+		} `json:"names"`
+		PokemonEncounters []struct {
+			Pokemon        PokeDexPokemon `json:"pokemon"`
+			VersionDetails []struct {
+				EncounterDetails []struct {
+					Chance          int           `json:"chance"`
+					ConditionValues []any         `json:"condition_values"`
+					MaxLevel        int           `json:"max_level"`
+					Method          PokeDexEntity `json:"method"`
+					MinLevel        int           `json:"min_level"`
+				} `json:"encounter_details"`
+				MaxChance int           `json:"max_chance"`
+				Version   PokeDexEntity `json:"version"`
+			} `json:"version_details"`
+		} `json:"pokemon_encounters"`
 	}
 
 	PokeDexClient struct {
