@@ -16,8 +16,6 @@ map: Displays the next N location areas in the Pokemon world
 mapb: (map back) Displays the previous N locations, similar to *map*
 help: Displays a help message
 exit: Exit the Pokedex`
-
-	baseUrl = "https://pokeapi.co/api/v2/"
 )
 
 func commandExit() error {

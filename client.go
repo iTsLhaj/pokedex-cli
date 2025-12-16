@@ -7,23 +7,32 @@ import (
 	"net/http"
 	"strconv"
 	"strings"
+
+	"github.com/kenzo/pokedexcli/internal/pokecache"
 )
 
 func NewPokeDexClient() *PokeDexClient {
 	return &PokeDexClient{
+		baseURL:       "https://pokeapi.co/api/v2/",
+		cache:         pokecache.NewCache(),
 		currentOffset: -pokeDexLimitOffset,
 		nextOffset:    0,
 	}
 }
 
 func (client *PokeDexClient) fetchLocations(httpClient *http.Client, offset, limit int) (data PokeDexLocationsData, err error) {
+	data, err = client.isEntryCached(offset)
+	if err == nil {
+		return
+	}
+
 	endpoint := strings.Join(
 		[]string{
 			"location-area?",
 			makeQuery("offset", strconv.Itoa(offset)),
 			makeQuery("limit", strconv.Itoa(limit)),
 		}, "&")
-	url := strings.Join([]string{baseUrl, endpoint}, "/")
+	url := strings.Join([]string{client.baseURL, endpoint}, "/")
 
 	var req *http.Request
 	req, err = http.NewRequest("GET", url, nil)
@@ -42,6 +51,8 @@ func (client *PokeDexClient) fetchLocations(httpClient *http.Client, offset, lim
 	if err != nil {
 		return
 	}
+
+	client.cache.Cache.Add(strconv.Itoa(offset), body)
 
 	err = json.Unmarshal(body, &data)
 	if err != nil {
@@ -82,4 +93,18 @@ func (client *PokeDexClient) getNextLocations() ([]PokeDexLocation, error) {
 		return []PokeDexLocation{}, err
 	}
 	return locData.Locations, nil
+}
+
+func (client *PokeDexClient) isEntryCached(offset int) (PokeDexLocationsData, error) {
+	var data PokeDexLocationsData
+
+	body, ok := client.cache.Cache.Get(strconv.Itoa(offset))
+	if !ok {
+		return PokeDexLocationsData{}, errors.New("cache entry not found")
+	}
+	err := json.Unmarshal(body, &data)
+	if err != nil {
+		return PokeDexLocationsData{}, err
+	}
+	return data, nil
 }

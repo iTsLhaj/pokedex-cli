@@ -32,7 +32,8 @@ func TestMap(t *testing.T) {
 	client := http.Client{}
 
 	t.Run("test API status", func(t *testing.T) {
-		req, _ := http.NewRequest(http.MethodGet, baseUrl, nil)
+		pdclient := NewPokeDexClient()
+		req, _ := http.NewRequest(http.MethodGet, pdclient.baseURL, nil)
 
 		res, err := client.Do(req)
 		if err != nil {
