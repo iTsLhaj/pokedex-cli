@@ -11,6 +11,11 @@ type (
 		callback    func([]string) error
 	}
 
+	cliCommandEntry struct {
+		cmdName string
+		cmd     cliCommand
+	}
+
 	cliCmdRegister map[string]cliCommand
 
 	ANSIColor string

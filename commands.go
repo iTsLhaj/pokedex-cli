@@ -18,9 +18,10 @@ Usage:
 
 map: Displays the next N location areas in the Pokemon world
 mapb: (map back) Displays the previous N locations, similar to *map*
-explore: list all pokemons located in *area*
-catch: catch a pokemon
-inspect: show details about an owned pokemon
+explore: List all pokemons located in *area*
+catch: Catch a pokemon
+inspect: Show details about an owned pokemon
+pokedex: List of all the names of the owned Pokemons
 help: Displays a help message
 exit: Exit the Pokedex
 `
@@ -135,5 +136,17 @@ func commandInspect(args []string) error {
 	}
 
 	fmt.Println("you have not caught that pokemon")
+	return nil
+}
+
+func commandPokeDex(args []string) error {
+	if len(client.ownedPookies) == 0 {
+		fmt.Println("Your Pokedex is Empty!")
+		return nil
+	}
+	fmt.Println("Your Pokedex:")
+	for _, pookie := range client.ownedPookies {
+		fmt.Printf(" - %s\n", pookie.Name)
+	}
 	return nil
 }

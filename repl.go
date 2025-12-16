@@ -7,13 +7,7 @@ import (
 	"os"
 )
 
-var commandsList []struct {
-	cmdName string
-	cmd     cliCommand
-} = []struct {
-	cmdName string
-	cmd     cliCommand
-}{
+var commandsList = []cliCommandEntry{
 	{
 		cmdName: "exit",
 		cmd: cliCommand{
@@ -68,6 +62,14 @@ var commandsList []struct {
 			name:        "inspect",
 			description: "Inspect a Pokemon (OWNED ONLY!)",
 			callback:    commandInspect,
+		},
+	},
+	{
+		cmdName: "pokedex",
+		cmd: cliCommand{
+			name:        "pokedex",
+			description: "list names of all owned Pokemons",
+			callback:    commandPokeDex,
 		},
 	},
 }
