@@ -1,5 +1,9 @@
 package main
 
+//
+// TODO: do some refactoring!
+//
+
 import (
 	"encoding/json"
 	"errors"
@@ -18,6 +22,52 @@ func NewPokeDexClient() *PokeDexClient {
 		currentOffset: -pokeDexLimitOffset,
 		nextOffset:    0,
 	}
+}
+
+func (client *PokeDexClient) fetchPookieData(httpClient *http.Client, pokemonName string) (data PokeDexPokemonData, err error) {
+	data, err = client.isPDPDEntryCached(pokemonName)
+	if err == nil {
+		return
+	}
+
+	url := strings.Join([]string{client.baseURL, "pokemon", pokemonName}, "/")
+
+	var req *http.Request
+	req, err = http.NewRequest("GET", url, nil)
+	if err != nil {
+		return
+	}
+
+	var res *http.Response
+	res, err = httpClient.Do(req)
+	if err != nil {
+		return
+	}
+	defer res.Body.Close()
+
+	if res.StatusCode == 404 {
+		err = errors.New("area not found")
+		return
+	}
+	if res.StatusCode != http.StatusOK {
+		err = errors.New("request to the pokedex API failed")
+		return
+	}
+
+	var body []byte
+	body, err = ioutil.ReadAll(res.Body)
+	if err != nil {
+		return
+	}
+
+	client.cache.Cache.Add(pokemonName, body)
+
+	err = json.Unmarshal(body, &data)
+	if err != nil {
+		return
+	}
+
+	return
 }
 
 func (client *PokeDexClient) fetchPokiesAt(httpClient *http.Client, area string) (pookies []PokeDexPokemon, err error) {
@@ -45,6 +95,8 @@ func (client *PokeDexClient) fetchPokiesAt(httpClient *http.Client, area string)
 	if err != nil {
 		return
 	}
+	defer res.Body.Close()
+
 	if res.StatusCode == 404 {
 		err = errors.New("area not found")
 		return
@@ -100,6 +152,7 @@ func (client *PokeDexClient) fetchLocations(httpClient *http.Client, offset, lim
 	if err != nil {
 		return
 	}
+	defer res.Body.Close()
 
 	var body []byte
 	body, err = ioutil.ReadAll(res.Body)
@@ -155,6 +208,7 @@ func (client *PokeDexClient) isPDLDEntryCached(offset int) (PokeDexLocationsData
 
 	body, ok := client.cache.Cache.Get(strconv.Itoa(offset))
 	if !ok {
+
 		return PokeDexLocationsData{}, errors.New("cache entry not found")
 	}
 	err := json.Unmarshal(body, &data)
@@ -182,4 +236,19 @@ func (client *PokeDexClient) isPDPEsEntryCached(area string) ([]PokeDexPokemon, 
 	}
 
 	return pokies, nil
+}
+
+func (client *PokeDexClient) isPDPDEntryCached(pookieName string) (PokeDexPokemonData, error) {
+	var data PokeDexPokemonData
+
+	body, ok := client.cache.Cache.Get(pookieName)
+	if !ok {
+		return PokeDexPokemonData{}, errors.New("cache entry not found")
+	}
+	err := json.Unmarshal(body, &data)
+	if err != nil {
+		return PokeDexPokemonData{}, err
+	}
+
+	return data, nil
 }

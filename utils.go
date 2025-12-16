@@ -47,3 +47,23 @@ func registerCommand(cmdReg cliCmdRegister, cmdName string, cmd cliCommand) erro
 func makeQuery(key, value string) string {
 	return fmt.Sprintf("%s=%s", key, value)
 }
+
+func pokeDexInspect(pookie PokeDexPokemonData) string {
+	data := fmt.Sprintf(`Name: %s
+Height: %d
+Weight: %d
+Stats:
+`, pookie.Name, pookie.Height, pookie.Weight)
+
+	for _, stat := range pookie.Stats {
+		data += fmt.Sprintf("  -%s: %d\n", stat.Stat.Name, stat.BaseStat)
+	}
+
+	data += "Types:\n"
+
+	for _, typ := range pookie.Types {
+		data += fmt.Sprintf(" - %s\n", typ.Type.Name)
+	}
+
+	return data
+}

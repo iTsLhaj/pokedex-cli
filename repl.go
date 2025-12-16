@@ -54,6 +54,22 @@ var commandsList []struct {
 			callback:    commandExplore,
 		},
 	},
+	{
+		cmdName: "catch",
+		cmd: cliCommand{
+			name:        "catch",
+			description: "Catch a pokemon",
+			callback:    commandCatch,
+		},
+	},
+	{
+		cmdName: "inspect",
+		cmd: cliCommand{
+			name:        "inspect",
+			description: "Inspect a Pokemon (OWNED ONLY!)",
+			callback:    commandInspect,
+		},
+	},
 }
 
 func initCommands(commands cliCmdRegister) {

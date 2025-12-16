@@ -32,21 +32,9 @@ type (
 	PokeDexPokemon PokeDexEntity
 
 	PokeDexPokemonEncounters struct {
-		EncounterMethodRates []struct {
-			EncounterMethod PokeDexEntity `json:"encounter_method"`
-			VersionDetails  []struct {
-				Rate    int           `json:"rate"`
-				Version PokeDexEntity `json:"version"`
-			} `json:"version_details"`
-		} `json:"encounter_method_rates"`
-		GameIndex int           `json:"game_index"`
-		ID        int           `json:"id"`
-		Location  PokeDexEntity `json:"location"`
-		Name      string        `json:"name"`
-		Names     []struct {
-			Language PokeDexEntity `json:"language"`
-			Name     string        `json:"name"`
-		} `json:"names"`
+		ID                int           `json:"id"`
+		Location          PokeDexEntity `json:"location"`
+		Name              string        `json:"name"`
 		PokemonEncounters []struct {
 			Pokemon        PokeDexPokemon `json:"pokemon"`
 			VersionDetails []struct {
@@ -63,10 +51,31 @@ type (
 		} `json:"pokemon_encounters"`
 	}
 
+	PokeDexPDStat struct {
+		BaseStat int           `json:"base_stat"`
+		Effort   int           `json:"effort"`
+		Stat     PokeDexEntity `json:"stat"`
+	}
+
+	PokeDexPDType struct {
+		Slot int           `json:"slot"`
+		Type PokeDexEntity `json:"type"`
+	}
+
+	PokeDexPokemonData struct {
+		BaseExperience int             `json:"base_experience"`
+		Weight         int             `json:"weight"`
+		Height         int             `json:"height"`
+		Name           string          `json:"name"`
+		Stats          []PokeDexPDStat `json:"stats"`
+		Types          []PokeDexPDType `json:"types"`
+	}
+
 	PokeDexClient struct {
 		baseURL       string
 		cache         *pokecache.ConfigurableCache
 		currentOffset int
 		nextOffset    int
+		ownedPookies  []PokeDexPokemonData
 	}
 )
